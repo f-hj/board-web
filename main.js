@@ -1,4 +1,6 @@
-const log = console.log
+const log = str => {
+  document.querySelector('#console').append(str + '\n')
+}
 
 const serviceUuid = '000000ff-0000-1000-8000-00805f9b34fb'
 const descriptors = []
@@ -30,6 +32,8 @@ const connect = () => {
         })
       })
     })
+    document.querySelector('#write').disabled = false
+    document.querySelector('#slider').disabled = false
   })
   .catch(error => {
     log('Argh! ' + error);
@@ -41,6 +45,19 @@ const writeOnDesc = () => {
   descriptors[0].writeValue(encoder.encode('coucou'))
   .then(_ => {
     log('success')
+  }).catch(err => {
+    console.error(err)
+  })
+}
+
+const writeValue = () => {
+  const val = parseInt(document.querySelector('#slider').value)
+  const buffer = new ArrayBuffer(1)
+  const arr = new Uint8Array(buffer)
+  arr.set([val])
+  descriptors[0].writeValue(buffer)
+  .then(_ => {
+    log('success: ' + val.toString(16))
   }).catch(err => {
     console.error(err)
   })
