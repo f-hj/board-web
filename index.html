@@ -14,7 +14,15 @@
         <p>First characteristic,<br>first service</p>
       </div>
     <div class="item">
-      <input id="slider" type="range" orient="vertical" value="0" max="255" oninput="writeValue()" disabled />
+      <input id="slider" type="range" orient="vertical" value="50" min="20" max="60" oninput="writeValue()" disabled />
+    </div>
+    <div class="item">
+      <canvas id="canvas" width="400px" height="400px">
+
+      </canvas>
+    </div>
+    <div class="item" id="currentVal">
+      0
     </div>
     <div class="item">
       <pre class="console" id="console"></pre>

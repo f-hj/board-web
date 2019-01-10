@@ -5,6 +5,8 @@ const log = str => {
 const serviceUuid = '000000ff-0000-1000-8000-00805f9b34fb'
 const descriptors = []
 
+const base = 40
+
 const connect = () => {
   navigator.bluetooth.requestDevice({filters: [{services: [serviceUuid]}]})
   .then(device => {
@@ -34,10 +36,48 @@ const connect = () => {
     })
     document.querySelector('#write').disabled = false
     document.querySelector('#slider').disabled = false
+    initCanvas()
   })
   .catch(error => {
     log('Argh! ' + error);
   })
+}
+
+const initCanvas = () => {
+  console.log('init canvas')
+  var drawing = false
+  var mousePos = { x:0, y:0 }
+  var lastPos = mousePos
+  let canvas = document.querySelector('#canvas')
+
+  canvas.addEventListener("mousedown", e => {
+    drawing = true
+    lastPos = getMousePos(canvas, e)
+  }, false)
+
+  canvas.addEventListener("mouseup", e => {
+    drawing = false
+    sendValue(base)
+  }, false)
+
+  canvas.addEventListener("mousemove", e => {
+    if (!drawing) return
+    mousePos = getMousePos(canvas, e)
+    const val = parseInt(base + ((lastPos.y - mousePos.y) / 14))
+    console.log('val:', val)
+    sendValue(val)
+  }, false)
+}
+
+
+
+// Get the position of the mouse relative to the canvas
+function getMousePos(canvasDom, mouseEvent) {
+  var rect = canvasDom.getBoundingClientRect()
+  return {
+    x: mouseEvent.clientX - rect.left,
+    y: mouseEvent.clientY - rect.top
+  }
 }
 
 const writeOnDesc = () => {
@@ -52,6 +92,24 @@ const writeOnDesc = () => {
 
 const writeValue = () => {
   const val = parseInt(document.querySelector('#slider').value)
+  sendValue(val)
+}
+
+let currentValue = base
+let lastValue = base
+
+const sendValue = val => {
+  document.querySelector('#currentVal').innerHTML = val
+  currentValue = val
+}
+
+setInterval(() => {
+  if (currentValue === lastValue) return
+  realSendValue(currentValue)
+  lastValue = currentValue
+}, 20)
+
+const realSendValue = (val) => {
   const buffer = new ArrayBuffer(1)
   const arr = new Uint8Array(buffer)
   arr.set([val])
@@ -60,5 +118,6 @@ const writeValue = () => {
     log('success: ' + val.toString(16))
   }).catch(err => {
     console.error(err)
+    lastValue = -1
   })
 }
