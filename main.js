@@ -2,7 +2,7 @@ const log = str => {
   document.querySelector('#console').append(str + '\n')
 }
 
-const serviceUuid = '000000ff-0000-1000-8000-00805f9b34fb'
+const serviceUuid = '00008010-0000-1000-8000-00805f9b34fb'
 const descriptors = []
 
 const base = 40
@@ -55,17 +55,17 @@ const initCanvas = () => {
     lastPos = getMousePos(canvas, e)
   }, false)
 
-  canvas.addEventListener("mouseup", e => {
-    drawing = false
-    sendValue(base)
-  }, false)
-
   canvas.addEventListener("mousemove", e => {
     if (!drawing) return
     mousePos = getMousePos(canvas, e)
     const val = parseInt(base + ((lastPos.y - mousePos.y) / 14))
     console.log('val:', val)
     sendValue(val)
+  }, false)
+
+  canvas.addEventListener("mouseup", e => {
+    drawing = false
+    sendValue(base)
   }, false)
 }
 
